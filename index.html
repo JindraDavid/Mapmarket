@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoMarket</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js"></script>
+  <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+</head>
+<body>
+  <header>
+    <h1>GeoMarket</h1>
+    <nav>
+      <a href="#" id="home-link">Domů</a> |
+      <a href="#" id="upload-link">Nahrát</a>
+    </nav>
+    <div id="user-status"></div>
+  </header>
+  <main>
+    <!-- home section -->
+    <section id="home-section" class="section">
+      <div id="search">
+        <input type="text" id="search-input" placeholder="Hledat balíčky...">
+        <input type="text" id="tags-input" placeholder="Tagy (oddělené čárkou)">
+        <button id="search-btn">Hledat</button>
+      </div>
+      <section id="package-list" class="grid"></section>
+    </section>
+    <!-- upload section -->
+    <section id="upload-section" class="section" style="display:none">
+      <h2>Nahrát balíček</h2>
+      <form id="upload-form">
+        <label for="title">Název balíčku</label>
+        <input type="text" id="title" name="title" required>
+        <label for="description">Popis</label>
+        <textarea id="description" name="description" required></textarea>
+        <label for="price">Cena (CZK)</label>
+        <input type="number" id="price" name="price" step="0.01" required>
+        <label for="tags">Tagy (čárkou)</label>
+        <input type="text" id="tags" name="tags">
+        <label for="file">Soubor</label>
+        <div id="dropzone" class="dropzone">
+          Přetáhněte soubor sem, nebo klikněte pro výběr
+          <input type="file" id="file" name="file" accept=".zip,.geojson,.shp" required style="display:none">
+        </div>
+        <button type="submit">Nahrát</button>
+      </form>
+      <div id="preview-container">
+        <div id="preview-map"></div>
+        <div id="park-info-panel"></div>
+      </div>
+    </section>
+    <!-- map section -->
+    <section id="map-section" class="section" style="display:none">
+      <h2 id="map-title">Prohlížení vrstvy</h2>
+      <div id="map" style="height: 80vh;"></div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2026 GeoMarket</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
