@@ -93,42 +93,49 @@ let previewLayer = null;
 
 async function handleUpload(e) {
   e.preventDefault();
-  const title = document.getElementById('title').value;
-  const description = document.getElementById('description').value;
-  const price = parseFloat(document.getElementById('price').value);
-  const tags = document.getElementById('tags').value;
-  const fileInput = document.getElementById('file');
-  const file = fileInput.files[0];
-  if (!file) {
-    alert('Vyberte soubor');
-    return;
-  }
+  try {
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const tags = document.getElementById('tags').value;
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('Vyberte soubor');
+      return;
+    }
 
-  // upload to storage
-  const fileName = `${Date.now()}_${file.name}`;
-  const { data: uploadData, error: uploadError } = await supabase.storage
-    .from('packages')
-    .upload(fileName, file, { upsert: true });
-  if (uploadError) {
-    console.error(uploadError);
-    alert('Chyba při nahrávání souboru');
-    return;
-  }
-  const { data: urlData } = supabase.storage.from('packages').getPublicUrl(fileName);
-  const file_url = urlData.publicUrl;
+    console.log('Nahrávám soubor:', file.name);
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('packages')
+      .upload(fileName, file, { upsert: true });
+    if (uploadError) {
+      console.error('Chyba storage:', uploadError);
+      alert(`Chyba souboru: ${uploadError.message}`);
+      return;
+    }
+    console.log('Soubor nahrán, generuji URL');
+    const { data: urlData } = supabase.storage.from('packages').getPublicUrl(fileName);
+    const file_url = urlData.publicUrl;
 
-  const { error: insertError } = await supabase.from('packages').insert([
-    { title, description, price, tags, file_url },
-  ]);
-  if (insertError) {
-    console.error(insertError);
-    alert('Chyba při ukládání metadat');
-    return;
+    console.log('Ukládám do databáze');
+    const { data: insertData, error: insertError } = await supabase.from('packages').insert([
+      { title, description, price, tags, file_url },
+    ]);
+    if (insertError) {
+      console.error('Chyba DB:', insertError);
+      alert(`Chyba databáze: ${insertError.message}`);
+      return;
+    }
+    alert('Balíček úspěšně nahrán');
+    showSection('home');
+    fetchAndRender();
+    e.target.reset();
+  } catch (err) {
+    console.error('Neočekávaná chyba:', err);
+    alert(`Chyba: ${err.message}`);
   }
-  alert('Balíček úspěšně nahrán');
-  showSection('home');
-  fetchAndRender();
-  e.target.reset();
 }
 
 function initPreviewMap() {
